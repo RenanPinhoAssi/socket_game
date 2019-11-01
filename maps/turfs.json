@@ -1,0 +1,37 @@
+{
+    "0":{
+        "name": "Void Barrier",
+        "collision": true,
+        "color": "#000000"
+    },
+    "1":{
+        "name": "Grass",
+        "collision": false,
+        "color": "#367336"
+    },
+    "2":{
+        "name": "Red Carpet",
+        "collision": false,
+        "color": "#B60016"
+    },
+    "3":{
+        "name": "Wood Floor",
+        "collision": false,
+        "color": "#512E00"
+    },
+    "4":{
+        "name": "Clear Water",
+        "collision": false,
+        "color": "#5EEEFE"
+    },
+    "5":{
+        "name": "Sand",
+        "collision": false,
+        "color": "#B08B2B"
+    },
+    "6":{
+        "name": "Metal Wall",
+        "collision": true,
+        "color": "#666666"
+    }
+}

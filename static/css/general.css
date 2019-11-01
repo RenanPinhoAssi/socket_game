@@ -1,0 +1,18 @@
+body{
+    overflow: hidden;
+}
+
+canvas{
+    position: absolute;
+    left: 0;
+    top: 0;
+}
+#player_layer{
+    z-index: 2;
+}
+#viewport{
+    z-index: 1;
+}
+#map_layer{
+    z-index: 0;
+}
