@@ -46,8 +46,8 @@ io.on("connection", function(socket) {
 	socket.on("new player", function() {
         PLAYERS[socket.id] = {};        
         PLAYERS[socket.id]["coordinates"] = {
-            x: 0,//Math.random() * MAP_SETTINGS["width"],
-            y: 0//Math.random() * MAP_SETTINGS["height"]
+            x: PLAYER_SIZE,//Math.random() * MAP_SETTINGS["width"],
+            y: PLAYER_SIZE//Math.random() * MAP_SETTINGS["height"]
         };
         PLAYERS[socket.id]["color"] = PLAYER_SKIN[Math.floor(Math.random()*PLAYER_SKIN.length)];
         PLAYERS[socket.id]["data"] = {
@@ -121,6 +121,7 @@ setInterval(function() {
             player["coordinates"].y += PLAYER_SPEED*timeDifference;
         }
         lastUpdateTime = currentTime;
+        console.log(player["coordinates"])
     }
 
     for(var i in BULLETS){

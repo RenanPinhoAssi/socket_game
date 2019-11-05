@@ -31,12 +31,16 @@ var PLAYER_SIZE;
 var MAP_HEIGHT;
 var MAP_WIDTH;
 
+var X_OFF_AJUST;
+var Y_OFF_AJUST;
+
 var initialize_player = function() {
 	player_layer_context.fillStyle = PLAYER_INFO["color"];
 	player_layer_context.beginPath();
+	console.log(PLAYER_INFO)
 	player_layer_context.arc(
-		VIEWPORT_CENTER_X,
-		VIEWPORT_CENTER_Y,
+		0,
+		0,
 		PLAYER_SIZE,
 		0,
 		2*Math.PI
@@ -56,6 +60,8 @@ var initialize_map = function() {
 			map_layer_context.fillStyle = this_turf["color"];
 			map_layer_context.beginPath();
 			map_layer_context.fillRect(x, y, map_size, map_size);
+			map_layer_context.strokeStyle = "#fff";
+			map_layer_context.strokeRect(x, y, map_size, map_size);
 		}
 		y += map_size;
 	};
@@ -95,10 +101,13 @@ var initialize_game = function(data) {
 	map_layer.width = MAP_WIDTH;
 	map_layer.height = MAP_HEIGHT;
 
+	X_OFF_AJUST = PLAYER_INFO["xi"]-VIEWPORT_WIDTH/2+ PLAYER_SIZE/2;
+	Y_OFF_AJUST = PLAYER_INFO["yi"]-VIEWPORT_HEIGHT/2+ PLAYER_SIZE/2;
 
 	viewport_context.translate(VIEWPORT_WIDTH/2 - PLAYER_SIZE/2,VIEWPORT_HEIGHT/2- PLAYER_SIZE/2);
-	$("#map_layer").css("left",-(PLAYER_INFO["xi"]-VIEWPORT_WIDTH/2+ PLAYER_SIZE/2));
-	$("#map_layer").css("top",-(PLAYER_INFO["yi"]-VIEWPORT_HEIGHT/2+ PLAYER_SIZE/2));
+	player_layer_context.translate(VIEWPORT_WIDTH/2 - PLAYER_SIZE/2,VIEWPORT_HEIGHT/2- PLAYER_SIZE/2);
+	$("#map_layer").css("left",-X_OFF_AJUST);
+	$("#map_layer").css("top",-Y_OFF_AJUST);
 
 	initialize_map();
 	initialize_player();
@@ -165,8 +174,6 @@ $(document).ready(function() {
 			
 			$("#map_layer").css("left",-(players_set[PLAYER_INFO["key"]]["coordinates"].x-VIEWPORT_WIDTH/2+ PLAYER_SIZE/2));
 			$("#map_layer").css("top",-(players_set[PLAYER_INFO["key"]]["coordinates"].y-VIEWPORT_HEIGHT/2+ PLAYER_SIZE/2));
-			// map_layer_context.translate(players_set[PLAYER_INFO["key"]].x,players_set[PLAYER_INFO["key"]].y);
-			// let myself = players_set[PLAYER_INFO["key"]]["coordinates"];
 			delete players_set[PLAYER_INFO["key"]];
 			for (var id in players_set) {
 				if (players_set[id]["alive"]) {
