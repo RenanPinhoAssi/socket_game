@@ -31,21 +31,9 @@ var PLAYER_SIZE;
 var MAP_HEIGHT;
 var MAP_WIDTH;
 
-var X_OFF_AJUST;
-var Y_OFF_AJUST;
 
 var initialize_player = function() {
-	player_layer_context.fillStyle = PLAYER_INFO["color"];
-	player_layer_context.beginPath();
-	console.log(PLAYER_INFO)
-	player_layer_context.arc(
-		0,
-		0,
-		PLAYER_SIZE,
-		0,
-		2*Math.PI
-	);
-	player_layer_context.fill();
+	draw_player(player_layer_context,PLAYER_INFO["color"],VIEWPORT_CENTER_X,VIEWPORT_CENTER_Y,PLAYER_SIZE)
 };
 
 var initialize_map = function() {
@@ -60,8 +48,6 @@ var initialize_map = function() {
 			map_layer_context.fillStyle = this_turf["color"];
 			map_layer_context.beginPath();
 			map_layer_context.fillRect(x, y, map_size, map_size);
-			map_layer_context.strokeStyle = "#fff";
-			map_layer_context.strokeRect(x, y, map_size, map_size);
 		}
 		y += map_size;
 	};
@@ -81,8 +67,9 @@ var initialize_game = function(data) {
 	MAP_HEIGHT = MAP_SETTINGS["height"];
 	MAP_WIDTH = MAP_SETTINGS["width"];
 	
-	VIEWPORT_CENTER_X = (VIEWPORT_WIDTH / 2) - (PLAYER_SIZE/2);
-	VIEWPORT_CENTER_Y = (VIEWPORT_HEIGHT / 2) - (PLAYER_SIZE/2);
+	VIEWPORT_CENTER_X = (VIEWPORT_WIDTH / 2) + (PLAYER_SIZE/2);
+	VIEWPORT_CENTER_Y = (VIEWPORT_HEIGHT / 2) + (PLAYER_SIZE/2);
+
 
 	viewport = document.getElementById("viewport");
 	map_layer = document.getElementById("map_layer");
@@ -101,13 +88,10 @@ var initialize_game = function(data) {
 	map_layer.width = MAP_WIDTH;
 	map_layer.height = MAP_HEIGHT;
 
-	X_OFF_AJUST = PLAYER_INFO["xi"]-VIEWPORT_WIDTH/2+ PLAYER_SIZE/2;
-	Y_OFF_AJUST = PLAYER_INFO["yi"]-VIEWPORT_HEIGHT/2+ PLAYER_SIZE/2;
 
-	viewport_context.translate(VIEWPORT_WIDTH/2 - PLAYER_SIZE/2,VIEWPORT_HEIGHT/2- PLAYER_SIZE/2);
-	player_layer_context.translate(VIEWPORT_WIDTH/2 - PLAYER_SIZE/2,VIEWPORT_HEIGHT/2- PLAYER_SIZE/2);
-	$("#map_layer").css("left",-X_OFF_AJUST);
-	$("#map_layer").css("top",-Y_OFF_AJUST);
+	viewport_context.translate(VIEWPORT_CENTER_X,VIEWPORT_CENTER_Y);
+	$("#map_layer").css("left",-PLAYER_INFO["xi"]-VIEWPORT_CENTER_X);
+	$("#map_layer").css("top",-PLAYER_INFO["yi"]-VIEWPORT_CENTER_Y);
 
 	initialize_map();
 	initialize_player();
@@ -166,35 +150,36 @@ $(document).ready(function() {
 	socket.emit("new player");
 	socket.on("startgame", function(data) {
 		initialize_game(data);
-		let test = $("#map_layer");
 		socket.on("renderUpdate", function(data) {
-			viewport_context.clearRect(-VIEWPORT_WIDTH/2,-VIEWPORT_HEIGHT/2,2*VIEWPORT_WIDTH,2*VIEWPORT_HEIGHT);
-			
+			viewport_context.clearRect(-VIEWPORT_WIDTH,-VIEWPORT_HEIGHT,2*VIEWPORT_WIDTH,2*VIEWPORT_HEIGHT);
 			let players_set = data["players"];
+			let x = players_set[PLAYER_INFO["key"]]["coordinates"].x;
+			let y = players_set[PLAYER_INFO["key"]]["coordinates"].y;
+
 			
-			$("#map_layer").css("left",-(players_set[PLAYER_INFO["key"]]["coordinates"].x-VIEWPORT_WIDTH/2+ PLAYER_SIZE/2));
-			$("#map_layer").css("top",-(players_set[PLAYER_INFO["key"]]["coordinates"].y-VIEWPORT_HEIGHT/2+ PLAYER_SIZE/2));
+			$("#map_layer").css("left",-(players_set[PLAYER_INFO["key"]]["coordinates"].x-VIEWPORT_CENTER_X));
+			$("#map_layer").css("top",-(players_set[PLAYER_INFO["key"]]["coordinates"].y-VIEWPORT_CENTER_Y));	
+
 			delete players_set[PLAYER_INFO["key"]];
 			for (var id in players_set) {
 				if (players_set[id]["alive"]) {
-					var player = players_set[id]["coordinates"];
+					let player = players_set[id]["coordinates"];
+					let dx = player.x - x;
+					let dy = player.y - y;
 					viewport_context.fillStyle = players_set[id]["color"];
 					viewport_context.beginPath();
-					viewport_context.arc(
-						player.x,
-						player.y,
-						PLAYER_SIZE,
-						0,
-						2 * Math.PI
-					);
+					draw_player(viewport_context,players_set[id]["color"],dx,dy,PLAYER_SIZE);
 					viewport_context.fill();
 				}
 			}
 			for (var i in data["bullets"]) {
 				let bullet = data["bullets"][i];
+				let dx = bullet.x - x;
+				let dy = bullet.y - y;
+
 				viewport_context.fillStyle = "black";
 				viewport_context.beginPath();
-				viewport_context.arc(bullet.x, bullet.y, 3, 0, 2 * Math.PI);
+				viewport_context.arc(dx, dy, 3, 0, 2 * Math.PI);
 				viewport_context.fill();
 			}
 		});

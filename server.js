@@ -46,8 +46,10 @@ io.on("connection", function(socket) {
 	socket.on("new player", function() {
         PLAYERS[socket.id] = {};        
         PLAYERS[socket.id]["coordinates"] = {
-            x: PLAYER_SIZE,//Math.random() * MAP_SETTINGS["width"],
-            y: PLAYER_SIZE//Math.random() * MAP_SETTINGS["height"]
+            dx: Math.random() * MAP_SETTINGS["width"],
+            dy: Math.random() * MAP_SETTINGS["height"],
+            x: Math.random() * MAP_SETTINGS["width"],
+            y: Math.random() * MAP_SETTINGS["height"]
         };
         PLAYERS[socket.id]["color"] = PLAYER_SKIN[Math.floor(Math.random()*PLAYER_SKIN.length)];
         PLAYERS[socket.id]["data"] = {
@@ -108,20 +110,51 @@ setInterval(function() {
     for(var key in PLAYERS){
         player = PLAYERS[key];
         let data = player["data"];
+        let xi = player["coordinates"].x;
+        let yi = player["coordinates"].y;
+        let xn = player["coordinates"].x;
+        let yn = player["coordinates"].y;
+        let xa = 0;
+        let ya = 0;
+        let index;
+        let map_tile_id;
+        let map_turf;
+
         if (data.left) {
-            player["coordinates"].x -= PLAYER_SPEED*timeDifference;
+            xn -= PLAYER_SPEED*timeDifference;
+            xa = -PLAYER_SIZE;
         }
         if (data.up) {
-            player["coordinates"].y -= PLAYER_SPEED*timeDifference;
+            yn -= PLAYER_SPEED*timeDifference;
+            ya = -PLAYER_SIZE;
         }
         if (data.right) {
-            player["coordinates"].x += PLAYER_SPEED*timeDifference;
+            xn += PLAYER_SPEED*timeDifference;
+            xa = PLAYER_SIZE;
         }
         if (data.down) {
-            player["coordinates"].y += PLAYER_SPEED*timeDifference;
+            yn += PLAYER_SPEED*timeDifference;
+            ya = PLAYER_SIZE;
         }
+
+        index = Math.floor((xn+xa)/100) + Math.floor((yn+ya)/100)*100;
+        
+        map_tile_id = MAP_SETTINGS["tile-map"][index];
+        map_turf = TURF_SETTINGS[map_tile_id];
+        console.log(index)
+        console.log(map_tile_id)
+        console.log(map_turf)
+        if(!map_turf["collision"]){
+            player["coordinates"].dx = xn - xi;
+            player["coordinates"].dy = yn - yi;
+            player["coordinates"].x = xn;
+            player["coordinates"].y = yn;
+        }
+        
+        
+        // MAP_SETTINGS["tile-map"][]
+
         lastUpdateTime = currentTime;
-        console.log(player["coordinates"])
     }
 
     for(var i in BULLETS){
@@ -143,7 +176,7 @@ setInterval(function() {
                     let p_yc = player["coordinates"].y + (PLAYER_SIZE/2);
                     let distance = (p_xc - line_components.xf)*(p_xc - line_components.xf) + (p_yc - line_components.yf)*(p_yc - line_components.yf)
                     distance = Math.sqrt(distance);
-                    if(distance < PLAYER_SIZE*1.5){
+                    if(distance <= PLAYER_SIZE){
                         PLAYERS[key]["alive"] = false;
                     }
                 }
