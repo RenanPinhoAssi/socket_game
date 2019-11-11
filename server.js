@@ -1,5 +1,5 @@
 // Dependencies
-var SHOW_MODE = false;
+var SHOW_MODE = true;
 var PORT = SHOW_MODE ? 5000 : 5010;
 
 var express = require("express");
@@ -23,7 +23,7 @@ server.listen(PORT, function() {
 });
 
 var PLAYER_SETTINGS = require("./player/player.json");
-var MAP_SETTINGS = require("./maps/regular.json");
+var MAP_SETTINGS = require("./maps/image_tile_map.json");
 var TURF_SETTINGS = require("./maps/turfs.json");
 
 var PLAYERS = {};
@@ -86,6 +86,8 @@ io.on("connection", function(socket) {
 		if (PLAYERS[socket.id]["alive"]) {
 			let angle = data;
 			let bullet = {
+				xi: PLAYERS[socket.id]["coordinates"].x,
+				yi: PLAYERS[socket.id]["coordinates"].y,
 				x: PLAYERS[socket.id]["coordinates"].x,
 				y: PLAYERS[socket.id]["coordinates"].y,
 				angle: angle,
@@ -134,8 +136,8 @@ setInterval(function() {
 			ya = PLAYER_SIZE;
 		}
 
-		index = Math.floor((xn + xa) / 100) + Math.floor((yn + ya) / 100) * 100;
-
+		index = Math.floor((xn + xa) / MAP_SETTINGS["tile-size"]) + Math.floor((yn + ya) / MAP_SETTINGS["tile-size"]) * MAP_SETTINGS["columns"];
+		
 		map_tile_id = MAP_SETTINGS["tile-map"][index];
 		map_turf = TURF_SETTINGS[map_tile_id];
 		if (!map_turf["collision"]) {
@@ -157,6 +159,8 @@ setInterval(function() {
 			let line_components = {};
 			line_components.xi = BULLETS[i]["x"] + 1.5;
 			line_components.yi = BULLETS[i]["y"] + 1.5;
+			BULLETS[i]["xi"] = line_components.xi;
+			BULLETS[i]["yi"] = line_components.yi;
 			BULLETS[i]["x"] +=
 				BULLET_PLAYER_SPEED * Math.cos(BULLETS[i]["angle"]) * timeDifference;
 			BULLETS[i]["y"] +=
@@ -187,8 +191,8 @@ setInterval(function() {
 			}
 
 			index =
-				Math.floor(line_components.xf / 100) +
-				Math.floor(line_components.yf / 100) * 100;
+				Math.floor(line_components.xf / MAP_SETTINGS["tile-size"]) +
+				Math.floor(line_components.yf / MAP_SETTINGS["tile-size"]) * MAP_SETTINGS["columns"];
 			map_tile_id = MAP_SETTINGS["tile-map"][index];
             map_turf = TURF_SETTINGS[map_tile_id];
 			if (map_turf["collision"]) {
