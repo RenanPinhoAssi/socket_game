@@ -42,7 +42,7 @@
     "sand":{
         "name": "Sand",
         "collision": false,
-        "image": "water.png"
+        "image": "sand.png"
     },
     "sand_water_corner_NE":{
         "name": "Sand",
