@@ -1,8 +1,55 @@
 var draw_player = function(context,color,x,y,size){
+    context.lineWidth = 4;
+    context.strokeStyle = "black";
     context.fillStyle = color;
     context.beginPath();
     context.arc(x,y,size,0,2*Math.PI);
     context.fill();
+    context.stroke();
+}
+
+var draw_weapon = function(context,x,y,color,size_player,size_weapon,angle){
+    let size = size_player + size_weapon;
+    let hand_size = size_player/3;
+    let xi = x + size_player*0.8*Math.cos(angle);
+    let yi = y + size_player*0.8*Math.sin(angle);
+    let xf = x + size*Math.cos(angle);
+    let yf = y + size*Math.sin(angle);
+
+    context.strokeStyle = "black";
+    context.lineWidth = 15;
+    context.beginPath();
+    context.moveTo(xi, yi);
+    context.lineTo(xf, yf);
+    context.stroke();
+
+    draw_hand(context,xi,yi,size_weapon,color,angle,hand_size);
+}
+
+var draw_hand = function(context,xi,yi,size_weapon,color,angle,hand_size){
+    let half_hand = hand_size/2;
+
+    let xf = xi + size_weapon*0.6*Math.cos(angle);
+    let yf = yi + size_weapon*0.6*Math.sin(angle);
+
+    xi += (5)*Math.sin(-angle);
+    yi += (5)*Math.cos(-angle);
+    xf += (half_hand)*Math.sin(-angle);
+    yf += (half_hand)*Math.cos(-angle);
+
+
+    context.lineWidth = 4;
+    context.strokeStyle = "black";
+    context.fillStyle = color;
+    context.beginPath();
+    context.arc(xi,yi,hand_size,0,2*Math.PI);
+    context.fill();
+    context.stroke();
+
+    context.beginPath();
+    context.arc(xf,yf,hand_size,0,2*Math.PI);
+    context.fill();
+    context.stroke();
 }
 
 var draw_bullet = function(bullet,x,y){
@@ -30,7 +77,7 @@ var draw_bullet_shell = function(context,color,x,y,size){
     context.fill();
 }
 
-var draw_picture_tile = function(path,x,y){
+var draw_picture_tile = function(path,x,y,map_size){
     let new_image = new Image();
     new_image.src = "/static/assets/tiles/" + path;
     new_image.onload = function() {

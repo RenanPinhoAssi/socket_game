@@ -23,6 +23,7 @@ server.listen(PORT, function() {
 });
 
 var PLAYER_SETTINGS = require("./player/player.json");
+var WEAPON_SETTINGS = require("./weapon/weapon.json");
 var MAP_SETTINGS = require("./maps/image_tile_map.json");
 var TURF_SETTINGS = require("./maps/turfs.json");
 
@@ -32,9 +33,9 @@ var BULLETS = [];
 var BULLET_PLAYER_SPEED = 2;
 var BULLET_DISTANCE = 800;
 
-var PLAYER_SPEED = PLAYER_SETTINGS["SPEED"];
-var PLAYER_SKIN = PLAYER_SETTINGS["SKIN"];
-var PLAYER_SIZE = PLAYER_SETTINGS["SIZE"];
+var PLAYER_SPEED 	= 	PLAYER_SETTINGS["SPEED"];
+var PLAYER_SKIN 	= 	PLAYER_SETTINGS["SKIN"];
+var PLAYER_SIZE 	= 	PLAYER_SETTINGS["SIZE"];
 
 io.on("connection", function(socket) {
 	socket.on("disconnect", function() {
@@ -57,6 +58,8 @@ io.on("connection", function(socket) {
 			left: false,
 			right: false
 		};
+		PLAYERS[socket.id]["weapon"] = "regular_rifle";
+		
 		PLAYERS[socket.id]["alive"] = true;
 		PLAYERS[socket.id]["key"] = socket.id;
 		socket.emit("startgame", {
@@ -81,15 +84,16 @@ io.on("connection", function(socket) {
 			}
 		} catch (e) {}
 	});
-
+	
 	socket.on("shoot", function(data) {
 		if (PLAYERS[socket.id]["alive"]) {
+			let size = PLAYER_SIZE + WEAPON_SETTINGS[PLAYERS[socket.id]["weapon"]]["SIZE"];
 			let angle = data;
 			let bullet = {
-				xi: PLAYERS[socket.id]["coordinates"].x,
-				yi: PLAYERS[socket.id]["coordinates"].y,
-				x: PLAYERS[socket.id]["coordinates"].x,
-				y: PLAYERS[socket.id]["coordinates"].y,
+				xi: PLAYERS[socket.id]["coordinates"].x + size*Math.cos(angle),
+				yi: PLAYERS[socket.id]["coordinates"].y + size*Math.sin(angle),
+				x: PLAYERS[socket.id]["coordinates"].x + size*Math.cos(angle),
+				y: PLAYERS[socket.id]["coordinates"].y + size*Math.sin(angle),
 				angle: angle,
 				shoot_date: new Date().getTime(),
 				distance_time: BULLET_DISTANCE,

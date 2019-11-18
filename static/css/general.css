@@ -8,6 +8,7 @@ canvas{
     left: 0;
     top: 0;
 }
+
 #player_layer{
     z-index: 2;
 }
