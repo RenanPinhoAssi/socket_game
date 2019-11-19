@@ -31,7 +31,7 @@ var PLAYERS = {};
 var BULLETS = [];
 
 var BULLET_PLAYER_SPEED = 2;
-var BULLET_DISTANCE = 800;
+var BULLET_DISTANCE = 2800;
 
 var PLAYER_SPEED 	= 	PLAYER_SETTINGS["SPEED"];
 var PLAYER_SKIN 	= 	PLAYER_SETTINGS["SKIN"];
@@ -39,16 +39,25 @@ var PLAYER_SIZE 	= 	PLAYER_SETTINGS["SIZE"];
 
 io.on("connection", function(socket) {
 	socket.on("disconnect", function() {
+		console.log("Player [" + socket.id + "] left the game");
 		delete PLAYERS[socket.id];
 	});
 
 	socket.on("new player", function() {
+		console.log("Player [" + socket.id + "] has joined the game");
 		PLAYERS[socket.id] = {};
+		let tile_size = MAP_SETTINGS["tile-size"];
+		let rx = Math.random() * MAP_SETTINGS["width"];
+		let ry = Math.random() * MAP_SETTINGS["height"];
+		
+		rx = (rx > tile_size ? (rx > MAP_SETTINGS["width"] - tile_size ? MAP_SETTINGS["width"] - tile_size - 50 :rx) : 450);
+		ry = (ry > tile_size ? (ry > MAP_SETTINGS["height"] - tile_size ? MAP_SETTINGS["height"] - tile_size - 50 :ry) : 450);
+
 		PLAYERS[socket.id]["coordinates"] = {
-			dx: Math.random() * MAP_SETTINGS["width"],
-			dy: Math.random() * MAP_SETTINGS["height"],
-			x: Math.random() * MAP_SETTINGS["width"],
-			y: Math.random() * MAP_SETTINGS["height"]
+			dx: rx,
+			dy: ry,
+			x:  rx,
+			y:  ry
 		};
 		PLAYERS[socket.id]["color"] =
 			PLAYER_SKIN[Math.floor(Math.random() * PLAYER_SKIN.length)];
@@ -101,6 +110,11 @@ io.on("connection", function(socket) {
 				owner: PLAYERS[socket.id]
 			};
 			BULLETS.push(bullet);
+		}
+	});
+	socket.on("angle_register", function(data) {
+		if (PLAYERS[socket.id]["alive"]) {
+			PLAYERS[socket.id]["angle"] = data
 		}
 	});
 });

@@ -162,10 +162,7 @@ var initialize_game = function(data) {
 	document
 		.getElementById("player_layer")
 		.addEventListener("mouseup", function(event) {
-			let dx = event.clientX - VIEWPORT_CENTER_X;
-			let dy = event.clientY - VIEWPORT_CENTER_Y;
-			let angle = Math.atan2(dy, dx);
-			socket.emit("shoot", angle);
+			socket.emit("shoot", ANGLE);
 		});
 
 	document
@@ -199,6 +196,7 @@ $(document).ready(function() {
 	socket.on("startgame", function(data) {
 		initialize_game(data);
 		socket.on("renderUpdate", function(data) {
+			socket.emit("angle_register", ANGLE);
 			viewport_context.clearRect(
 				-VIEWPORT_WIDTH,
 				-VIEWPORT_HEIGHT,
@@ -236,6 +234,15 @@ $(document).ready(function() {
 						dx,
 						dy,
 						PLAYER_SIZE
+					);
+					draw_weapon(
+						viewport_context,
+						dx,
+						dy,
+						players_set[id]["color"],
+						PLAYER_SIZE,
+						75,
+						players_set[id]["angle"]
 					);
 					viewport_context.fill();
 				}
