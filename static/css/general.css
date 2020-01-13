@@ -1,20 +1,24 @@
-body{
-    overflow: hidden;    
-    background: #000;
+html {
+    cursor: url("/static/assets/crosshair/circle_crosshair.svg") 40 40, crosshair;
 }
 
-canvas{
-    position: absolute;
-    left: 0;
-    top: 0;
+body {
+	overflow: hidden;
+	background: #000;
 }
 
-#player_layer{
-    z-index: 2;
+canvas {
+	position: absolute;
+	left: 0;
+	top: 0;
 }
-#viewport{
-    z-index: 1;
+
+#player_layer {
+	z-index: 2;
 }
-#map_layer{
-    z-index: 0;
+#viewport {
+	z-index: 1;
+}
+#map_layer {
+	z-index: 0;
 }

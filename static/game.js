@@ -31,7 +31,7 @@ var PLAYER_SIZE;
 var MAP_HEIGHT;
 var MAP_WIDTH;
 
-var ANGLE   = 0;
+var ANGLE = 0;
 var POINTER = 0;
 
 var initialize_player = function() {
@@ -45,9 +45,9 @@ var initialize_player = function() {
 };
 
 var initialize_map = function() {
-	let image_cache = {};
 	let map_data = MAP_SETTINGS["tile-map"];
 	let map_size = MAP_SETTINGS["tile-size"];
+	let spritesheet = MAP_SETTINGS["spritesheet"];
 	let columns = MAP_SETTINGS["columns"];
 	let x;
 	let y = 0;
@@ -56,14 +56,14 @@ var initialize_map = function() {
 			x = map_size * i;
 			let tile_key = map_data[i + columns * j];
 			let this_turf = TURF_SETTINGS[tile_key];
-			if (this_turf["color"]) {
-				map_layer_context.fillStyle = this_turf["color"];
+			if (this_turf["frame"]["solid"]) {
+				map_layer_context.fillStyle = this_turf["frame"]["solid"];
 				map_layer_context.beginPath();
 				map_layer_context.fillRect(x, y, map_size, map_size);
 				map_layer_context.strokeStyle = "black";
 				map_layer_context.strokeRect(x, y, map_size, map_size);
 			} else {
-				let path = this_turf["image"];
+				let path = this_turf["frame"];
 				draw_picture_tile(path, x, y, map_size);
 			}
 		}

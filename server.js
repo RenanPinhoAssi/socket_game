@@ -24,8 +24,8 @@ server.listen(PORT, function() {
 
 var PLAYER_SETTINGS = require("./player/player.json");
 var WEAPON_SETTINGS = require("./weapon/weapon.json");
-var MAP_SETTINGS = require("./maps/image_tile_map.json");
-var TURF_SETTINGS = require("./maps/turfs.json");
+var MAP_SETTINGS = require("./maps/coco_island_map.json.json");
+var TURF_SETTINGS = require("./maps/coco_island_turfs.json");
 
 var PLAYERS = {};
 var BULLETS = [];
@@ -33,9 +33,9 @@ var BULLETS = [];
 var BULLET_PLAYER_SPEED = 2;
 var BULLET_DISTANCE = 2800;
 
-var PLAYER_SPEED 	= 	PLAYER_SETTINGS["SPEED"];
-var PLAYER_SKIN 	= 	PLAYER_SETTINGS["SKIN"];
-var PLAYER_SIZE 	= 	PLAYER_SETTINGS["SIZE"];
+var PLAYER_SPEED = PLAYER_SETTINGS["SPEED"];
+var PLAYER_SKIN = PLAYER_SETTINGS["SKIN"];
+var PLAYER_SIZE = PLAYER_SETTINGS["SIZE"];
 
 io.on("connection", function(socket) {
 	socket.on("disconnect", function() {
@@ -49,15 +49,25 @@ io.on("connection", function(socket) {
 		let tile_size = MAP_SETTINGS["tile-size"];
 		let rx = Math.random() * MAP_SETTINGS["width"];
 		let ry = Math.random() * MAP_SETTINGS["height"];
-		
-		rx = (rx > tile_size ? (rx > MAP_SETTINGS["width"] - tile_size ? MAP_SETTINGS["width"] - tile_size - 50 :rx) : 450);
-		ry = (ry > tile_size ? (ry > MAP_SETTINGS["height"] - tile_size ? MAP_SETTINGS["height"] - tile_size - 50 :ry) : 450);
+
+		rx =
+			rx > tile_size
+				? rx > MAP_SETTINGS["width"] - tile_size
+					? MAP_SETTINGS["width"] - tile_size - 50
+					: rx
+				: 450;
+		ry =
+			ry > tile_size
+				? ry > MAP_SETTINGS["height"] - tile_size
+					? MAP_SETTINGS["height"] - tile_size - 50
+					: ry
+				: 450;
 
 		PLAYERS[socket.id]["coordinates"] = {
 			dx: rx,
 			dy: ry,
-			x:  rx,
-			y:  ry
+			x: rx,
+			y: ry
 		};
 		PLAYERS[socket.id]["color"] =
 			PLAYER_SKIN[Math.floor(Math.random() * PLAYER_SKIN.length)];
@@ -68,7 +78,7 @@ io.on("connection", function(socket) {
 			right: false
 		};
 		PLAYERS[socket.id]["weapon"] = "regular_rifle";
-		
+
 		PLAYERS[socket.id]["alive"] = true;
 		PLAYERS[socket.id]["key"] = socket.id;
 		socket.emit("startgame", {
@@ -93,16 +103,17 @@ io.on("connection", function(socket) {
 			}
 		} catch (e) {}
 	});
-	
+
 	socket.on("shoot", function(data) {
 		if (PLAYERS[socket.id]["alive"]) {
-			let size = PLAYER_SIZE + WEAPON_SETTINGS[PLAYERS[socket.id]["weapon"]]["SIZE"];
+			let size =
+				PLAYER_SIZE + WEAPON_SETTINGS[PLAYERS[socket.id]["weapon"]]["SIZE"];
 			let angle = data;
 			let bullet = {
-				xi: PLAYERS[socket.id]["coordinates"].x + size*Math.cos(angle),
-				yi: PLAYERS[socket.id]["coordinates"].y + size*Math.sin(angle),
-				x: PLAYERS[socket.id]["coordinates"].x + size*Math.cos(angle),
-				y: PLAYERS[socket.id]["coordinates"].y + size*Math.sin(angle),
+				xi: PLAYERS[socket.id]["coordinates"].x + size * Math.cos(angle),
+				yi: PLAYERS[socket.id]["coordinates"].y + size * Math.sin(angle),
+				x: PLAYERS[socket.id]["coordinates"].x + size * Math.cos(angle),
+				y: PLAYERS[socket.id]["coordinates"].y + size * Math.sin(angle),
 				angle: angle,
 				shoot_date: new Date().getTime(),
 				distance_time: BULLET_DISTANCE,
@@ -114,7 +125,7 @@ io.on("connection", function(socket) {
 	});
 	socket.on("angle_register", function(data) {
 		if (PLAYERS[socket.id]["alive"]) {
-			PLAYERS[socket.id]["angle"] = data
+			PLAYERS[socket.id]["angle"] = data;
 		}
 	});
 });
@@ -154,8 +165,11 @@ setInterval(function() {
 			ya = PLAYER_SIZE;
 		}
 
-		index = Math.floor((xn + xa) / MAP_SETTINGS["tile-size"]) + Math.floor((yn + ya) / MAP_SETTINGS["tile-size"]) * MAP_SETTINGS["columns"];
-		
+		index =
+			Math.floor((xn + xa) / MAP_SETTINGS["tile-size"]) +
+			Math.floor((yn + ya) / MAP_SETTINGS["tile-size"]) *
+				MAP_SETTINGS["columns"];
+
 		map_tile_id = MAP_SETTINGS["tile-map"][index];
 		map_turf = TURF_SETTINGS[map_tile_id];
 		if (!map_turf["collision"]) {
@@ -210,9 +224,10 @@ setInterval(function() {
 
 			index =
 				Math.floor(line_components.xf / MAP_SETTINGS["tile-size"]) +
-				Math.floor(line_components.yf / MAP_SETTINGS["tile-size"]) * MAP_SETTINGS["columns"];
+				Math.floor(line_components.yf / MAP_SETTINGS["tile-size"]) *
+					MAP_SETTINGS["columns"];
 			map_tile_id = MAP_SETTINGS["tile-map"][index];
-            map_turf = TURF_SETTINGS[map_tile_id];
+			map_turf = TURF_SETTINGS[map_tile_id];
 			if (map_turf["collision"]) {
 				BULLETS[i]["alive"] = false;
 			}
