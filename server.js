@@ -22,11 +22,14 @@ server.listen(PORT, function() {
 	console.log("Starting server on port " + PORT);
 });
 
-var MAP_SETTINGS = require("./scripts/maps/coco_island_map.json");
-var TURF_SETTINGS = require("./scripts/maps/coco_island_turfs.json");
+// var TEST = require('./script/test');
+// TEST.print_hello();
 
-var PLAYER_SETTINGS = require("./scripts/player/scripts/player.json");
-var WEAPON_SETTINGS = require("./scripts/weapon/scripts/weapon.json");
+var MAP_SETTINGS = require("./config/maps/coco_island_map.json");
+var TURF_SETTINGS = require("./config/maps/coco_island_turfs.json");
+
+var PLAYER_SETTINGS = require("./config/player/player.json");
+var WEAPON_SETTINGS = require("./config/weapon/weapon.json");
 
 var PLAYERS = {};
 var BULLETS = [];
