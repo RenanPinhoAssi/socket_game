@@ -1,0 +1,14 @@
+{
+	"regular_rifle": {
+		"SIZE": 75,
+		"DAMAGE": 10,
+		"BULLET_SPEED": 1.5,
+		"ACCURACY": 98,
+		"ACCURACY_PENALTY": 0,
+		"SPREAD_FACTOR": 0,
+		"CAPACITY": 30,
+        "MAX_RANGE": 0,
+        "BULLETS_PER_SHOOT": 1,
+		"MODES": ["AUTO","BURST","SINGLE"]
+	}
+}

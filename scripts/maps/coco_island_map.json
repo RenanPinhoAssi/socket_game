@@ -1,6 +1,6 @@
 {
     "name": "Coco Island",
-    "spritesheet": "coco_island",
+    "spritesheet": "coco_island.png",
     "height": 10000,
     "width": 10000,
     "columns": 25,

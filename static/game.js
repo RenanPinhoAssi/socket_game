@@ -49,26 +49,31 @@ var initialize_map = function() {
 	let map_size = MAP_SETTINGS["tile-size"];
 	let spritesheet = MAP_SETTINGS["spritesheet"];
 	let columns = MAP_SETTINGS["columns"];
-	let x;
-	let y = 0;
-	for (var j = 0; j < columns; j++) {
-		for (var i = 0; i < columns; i++) {
-			x = map_size * i;
-			let tile_key = map_data[i + columns * j];
-			let this_turf = TURF_SETTINGS[tile_key];
-			if (this_turf["frame"]["solid"]) {
-				map_layer_context.fillStyle = this_turf["frame"]["solid"];
-				map_layer_context.beginPath();
-				map_layer_context.fillRect(x, y, map_size, map_size);
-				map_layer_context.strokeStyle = "black";
-				map_layer_context.strokeRect(x, y, map_size, map_size);
-			} else {
-				let path = this_turf["frame"];
-				draw_picture_tile(path, x, y, map_size);
+
+	let new_image = new Image();
+	new_image.src = "/static/assets/spritesheets/tiles/" + spritesheet;
+	new_image.onload = function() {
+		let x = 0;
+		let y = 0;
+		for (var j = 0; j < columns; j++) {
+			for (var i = 0; i < columns; i++) {
+				x = map_size * i;
+				let tile_key = map_data[i + columns * j];
+				let this_turf = TURF_SETTINGS[tile_key];
+				if (this_turf["frame"]["solid"]) {
+					map_layer_context.fillStyle = this_turf["frame"]["solid"];
+					map_layer_context.beginPath();
+					map_layer_context.fillRect(x, y, map_size, map_size);
+					map_layer_context.strokeStyle = "black";
+					map_layer_context.strokeRect(x, y, map_size, map_size);
+				} else {
+					let path = this_turf["frame"];
+					draw_tile_from_sprite_sheet(path,this_turf.rotation,new_image, x, y, map_size);
+				}
 			}
+			y += map_size;
 		}
-		y += map_size;
-	}
+	};
 };
 
 var initialize_game = function(data) {
@@ -159,11 +164,14 @@ var initialize_game = function(data) {
 		}
 		socket.emit("movement", movement);
 	});
-	document
-		.getElementById("player_layer")
-		.addEventListener("mouseup", function(event) {
-			socket.emit("shoot", ANGLE);
-		});
+
+	document.getElementById("player_layer").addEventListener("mousedown", function(event) {
+		socket.emit("shoot", ANGLE);
+	});
+
+	document.getElementById("player_layer").addEventListener("mouseup", function(event) {
+		socket.emit("hold_fire");
+	});
 
 	document
 		.getElementById("player_layer")

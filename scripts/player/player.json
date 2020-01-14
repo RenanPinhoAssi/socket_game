@@ -1,0 +1,6 @@
+{
+    "HITPOINTS": 100,
+    "SPEED": 0.5,
+    "SIZE": 50,
+    "SKIN": ["green","red","blue","pink","cyan","black","gray","purple","brown"]
+}

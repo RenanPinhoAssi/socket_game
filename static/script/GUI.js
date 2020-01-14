@@ -88,13 +88,14 @@ var draw_picture_tile = function(path,x,y,map_size){
     };
 }
 
-var draw_tile_from_sprite_sheet = function(path,x,y,map_size){
-    let new_image = new Image();
-    new_image.src = "/static/assets/tiles/" + path;
-    new_image.onload = function() {
-        map_layer_context.drawImage(new_image, x, y);
-        map_layer_context.beginPath();
-        map_layer_context.strokeStyle = "black";
-        map_layer_context.strokeRect(x, y, map_size, map_size);
-    };
+var draw_tile_from_sprite_sheet = function(path,rotation,spritsheet,x,y,map_size){
+    let angle = (rotation * Math.PI) / 180;
+    map_layer_context.translate(x, y);
+    map_layer_context.rotate(angle);
+    map_layer_context.drawImage(spritsheet, path.x, path.y, map_size, map_size, -map_size/2, -map_size/2, map_size, map_size);
+    map_layer_context.rotate(-angle);
+    map_layer_context.strokeStyle = "black";
+    map_layer_context.strokeRect(-map_size/2, -map_size/2, map_size, map_size);
+    map_layer_context.translate(-x, -y);
+    map_layer_context.beginPath();
 }
