@@ -140,6 +140,9 @@ var initialize_game = function(data) {
 				change = !movement.down;
 				movement.down = true;
 				break;
+			case 86: // S
+				socket.emit("change_weapon_mode");
+				break;
 		}
 
 		if (change) {
@@ -164,6 +167,7 @@ var initialize_game = function(data) {
 		}
 		socket.emit("movement", movement);
 	});
+
 
 	document.getElementById("player_layer").addEventListener("mousedown", function(event) {
 		socket.emit("shoot", ANGLE);

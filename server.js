@@ -22,8 +22,7 @@ server.listen(PORT, function() {
 	console.log("Starting server on port " + PORT);
 });
 
-// var TEST = require('./script/test');
-// TEST.print_hello();
+var SHOOT_FUNCTIONS = require('./script/shoot');
 
 var MAP_SETTINGS = require("./config/maps/coco_island_map.json");
 var TURF_SETTINGS = require("./config/maps/coco_island_turfs.json");
@@ -82,6 +81,10 @@ io.on("connection", function(socket) {
 			right: false
 		};
 		PLAYERS[socket.id]["weapon"] = "regular_rifle";
+		PLAYERS[socket.id]["weapon_mode"] = 0;
+		PLAYERS[socket.id]["shooting"] = false;
+		PLAYERS[socket.id]["next_shoot_time"] = 0;
+		
 
 		PLAYERS[socket.id]["alive"] = true;
 		PLAYERS[socket.id]["key"] = socket.id;
@@ -107,30 +110,25 @@ io.on("connection", function(socket) {
 			}
 		} catch (e) {}
 	});
+	
 
 	socket.on("shoot", function(data) {
-		if (PLAYERS[socket.id]["alive"]) {
-			let size =
-				PLAYER_SIZE + WEAPON_SETTINGS[PLAYERS[socket.id]["weapon"]]["SIZE"];
-			let angle = data;
-			let bullet = {
-				xi: PLAYERS[socket.id]["coordinates"].x + size * Math.cos(angle),
-				yi: PLAYERS[socket.id]["coordinates"].y + size * Math.sin(angle),
-				x: PLAYERS[socket.id]["coordinates"].x + size * Math.cos(angle),
-				y: PLAYERS[socket.id]["coordinates"].y + size * Math.sin(angle),
-				angle: angle,
-				shoot_date: new Date().getTime(),
-				distance_time: BULLET_DISTANCE,
-				alive: true,
-				owner: PLAYERS[socket.id]
-			};
-			BULLETS.push(bullet);
-		}
+		PLAYERS[socket.id]["shooting"] = true;
 	});
+
+	socket.on("hold_fire", function(data) {	
+		PLAYERS[socket.id]["shooting"] = false;
+	});
+	
 	socket.on("angle_register", function(data) {
 		if (PLAYERS[socket.id]["alive"]) {
 			PLAYERS[socket.id]["angle"] = data;
 		}
+	});
+
+	socket.on("change_weapon_mode", function() {	
+		PLAYERS[socket.id]["weapon_mode"] = (PLAYERS[socket.id]["weapon_mode"] + 1 ) % 3;
+		PLAYERS[socket.id]["shooting"] = false;
 	});
 });
 
@@ -152,6 +150,13 @@ setInterval(function() {
 		let map_tile_id;
 		let map_turf;
 
+
+		
+
+		if(currentTime >= player["next_shoot_time"]){
+			SHOOT_FUNCTIONS.perform_shoot(player,PLAYER_SIZE,WEAPON_SETTINGS,BULLET_DISTANCE,BULLETS);
+		}
+
 		if (data.left) {
 			xn -= PLAYER_SPEED * timeDifference;
 			xa = -PLAYER_SIZE;
@@ -168,6 +173,8 @@ setInterval(function() {
 			yn += PLAYER_SPEED * timeDifference;
 			ya = PLAYER_SIZE;
 		}
+
+		
 
 		index =
 			Math.floor((xn + xa) / MAP_SETTINGS["tile-size"]) +
