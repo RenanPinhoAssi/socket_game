@@ -24,5 +24,6 @@ canvas {
 }
 
 #HUD_layer {
-	z-index: 999;
+	z-index: 3;
+	background: #00000000;
 }

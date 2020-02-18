@@ -123,7 +123,7 @@ var initialize_game = function(data) {
 
 	initialize_map();
 	initialize_player();
-	start_healthbox(map_layer_context,VIEWPORT_WIDTH,VIEWPORT_HEIGHT);
+	// start_healthbox(map_layer_context,VIEWPORT_WIDTH,VIEWPORT_HEIGHT);
 
 	document.addEventListener("keydown", function(event) {
 		switch (event.keyCode) {
