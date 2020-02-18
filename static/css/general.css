@@ -22,3 +22,7 @@ canvas {
 #map_layer {
 	z-index: 0;
 }
+
+#HUD_layer {
+	z-index: 999;
+}

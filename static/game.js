@@ -3,10 +3,12 @@ var socket = io();
 var viewport;
 var map_layer;
 var player_layer;
+var HUD_layer;
 
 var viewport_context;
 var map_layer_context;
 var player_layer_context;
+var HUD_layer_context;
 
 var movement = {
 	up: false,
@@ -96,12 +98,12 @@ var initialize_game = function(data) {
 	viewport = document.getElementById("viewport");
 	map_layer = document.getElementById("map_layer");
 	player_layer = document.getElementById("player_layer");
-	// effects_layer = document.getElementById("effects_layer");
+	HUD_layer = document.getElementById("HUD_layer");
 
 	viewport_context = viewport.getContext("2d");
 	map_layer_context = map_layer.getContext("2d");
 	player_layer_context = player_layer.getContext("2d");
-	// effects_layer_context = effects_layer.getContext("2d");
+	HUD_layer_context = HUD_layer.getContext("2d");
 
 	viewport.width = VIEWPORT_WIDTH;
 	viewport.height = VIEWPORT_HEIGHT;
@@ -109,8 +111,8 @@ var initialize_game = function(data) {
 	player_layer.width = VIEWPORT_WIDTH;
 	player_layer.height = VIEWPORT_HEIGHT;
 
-	// effects_layer.width = VIEWPORT_WIDTH;
-	// effects_layer.height = VIEWPORT_HEIGHT;
+	HUD_layer.width = VIEWPORT_WIDTH;
+	HUD_layer.height = VIEWPORT_HEIGHT;
 
 	map_layer.width = MAP_WIDTH;
 	map_layer.height = MAP_HEIGHT;
@@ -121,6 +123,7 @@ var initialize_game = function(data) {
 
 	initialize_map();
 	initialize_player();
+	start_healthbox(map_layer_context,VIEWPORT_WIDTH,VIEWPORT_HEIGHT);
 
 	document.addEventListener("keydown", function(event) {
 		switch (event.keyCode) {

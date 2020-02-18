@@ -1,0 +1,16 @@
+{
+  "frames": {
+    
+  },
+  "meta": {
+    "app": "http://free-tex-packer.com",
+    "version": "0.6.4",
+    "image": "texture.png",
+    "format": "RGBA8888",
+    "size": {
+      "w": 3001,
+      "h": 2500
+    },
+    "scale": 1
+  }
+}

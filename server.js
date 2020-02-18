@@ -9,6 +9,7 @@ var socketIO = require("socket.io");
 var app = express();
 var server = http.Server(app);
 var io = socketIO(server);
+var MAP_NAME = "clear_water_island";
 app.set("port", PORT);
 app.use("/static", express.static(__dirname + "/static"));
 
@@ -22,10 +23,10 @@ server.listen(PORT, function() {
 	console.log("Starting server on port " + PORT);
 });
 
-var SHOOT_FUNCTIONS = require('./script/shoot');
+var SHOOT_FUNCTIONS = require("./script/shoot");
 
-var MAP_SETTINGS = require("./config/maps/coco_island_map.json");
-var TURF_SETTINGS = require("./config/maps/coco_island_turfs.json");
+var MAP_SETTINGS = require("./config/maps/" + MAP_NAME + ".json");
+var TURF_SETTINGS = require("./config/maps/" + MAP_NAME + "_turfs.json");
 
 var PLAYER_SETTINGS = require("./config/player/player.json");
 var WEAPON_SETTINGS = require("./config/weapon/weapon.json");
@@ -84,7 +85,6 @@ io.on("connection", function(socket) {
 		PLAYERS[socket.id]["weapon_mode"] = 0;
 		PLAYERS[socket.id]["shooting"] = false;
 		PLAYERS[socket.id]["next_shoot_time"] = 0;
-		
 
 		PLAYERS[socket.id]["alive"] = true;
 		PLAYERS[socket.id]["key"] = socket.id;
@@ -110,24 +110,24 @@ io.on("connection", function(socket) {
 			}
 		} catch (e) {}
 	});
-	
 
 	socket.on("shoot", function(data) {
 		PLAYERS[socket.id]["shooting"] = true;
 	});
 
-	socket.on("hold_fire", function(data) {	
+	socket.on("hold_fire", function(data) {
 		PLAYERS[socket.id]["shooting"] = false;
 	});
-	
+
 	socket.on("angle_register", function(data) {
 		if (PLAYERS[socket.id]["alive"]) {
 			PLAYERS[socket.id]["angle"] = data;
 		}
 	});
 
-	socket.on("change_weapon_mode", function() {	
-		PLAYERS[socket.id]["weapon_mode"] = (PLAYERS[socket.id]["weapon_mode"] + 1 ) % 3;
+	socket.on("change_weapon_mode", function() {
+		PLAYERS[socket.id]["weapon_mode"] =
+			(PLAYERS[socket.id]["weapon_mode"] + 1) % 3;
 		PLAYERS[socket.id]["shooting"] = false;
 	});
 });
@@ -150,11 +150,14 @@ setInterval(function() {
 		let map_tile_id;
 		let map_turf;
 
-
-		
-
-		if(currentTime >= player["next_shoot_time"]){
-			SHOOT_FUNCTIONS.perform_shoot(player,PLAYER_SIZE,WEAPON_SETTINGS,BULLET_DISTANCE,BULLETS);
+		if (currentTime >= player["next_shoot_time"]) {
+			SHOOT_FUNCTIONS.perform_shoot(
+				player,
+				PLAYER_SIZE,
+				WEAPON_SETTINGS,
+				BULLET_DISTANCE,
+				BULLETS
+			);
 		}
 
 		if (data.left) {
@@ -173,8 +176,6 @@ setInterval(function() {
 			yn += PLAYER_SPEED * timeDifference;
 			ya = PLAYER_SIZE;
 		}
-
-		
 
 		index =
 			Math.floor((xn + xa) / MAP_SETTINGS["tile-size"]) +
